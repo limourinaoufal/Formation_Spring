@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+	<context:component-scan base-package="ma.lndroid.tp.spring.orm.spring.data.jpa.xmlA.*" />
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations"
+			value="ma/lndroid/tp/spring/orm/resources/DB.properties" />
+	</bean>
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${mysql.driverClassName}" />
+		<property name="url" value="${mysql.url}" />
+		<!-- Comment username and Password When using Derby Db -->
+		<property name="username" value="${mysql.username}" />
+		<property name="password" value="${mysql.password}" />
+	</bean>
+
+
+
+	<bean id="emp" class="ma.lndroid.tp.spring.orm.spring.data.jpa.xmlA.Employee"
+		scope="prototype" />
+
+
+
+	<bean id="empDao" class="ma.lndroid.tp.spring.orm.spring.data.jpa.xmlA.EmployeeDao"
+		autowire="byType">
+	</bean>
+
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+
+		<property name="dataSource" ref="dataSource" />
+		<property name="persistenceUnitName" value="JPA_SPRING_XMLA" />
+		<property name="persistenceXmlLocation"
+			value="ma/lndroid/tp/spring/orm/spring/data/jpa/xmlA/persistence.xml" />
+		<property name="mappingResources" >
+			<list>
+				<value>ma/lndroid/tp/spring/orm/spring/data/jpa/xmlA/Employee.xml</value>
+			</list>
+		</property>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">${mysql.hibernate.dialect}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${mysql.hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.show_sql">${mysql.hibernate.show_sql}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+
+
+</beans>
